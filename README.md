@@ -56,7 +56,7 @@ word to follow it.
 ## Building from source
 
 ```sh
-git clone https://github.com/roblillack/retrosaurus
+git clone https://github.com/roblillack/RetroSaurus
 cd retrosaurus
 cargo build --release
 ```

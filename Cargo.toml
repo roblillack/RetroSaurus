@@ -5,16 +5,15 @@ edition = "2024"
 rust-version = "1.88"
 description = "A retro Windows 3.1-styled thesaurus and dictionary for your desktop, powered by the Open English WordNet"
 authors = ["Robert Lillack <rob@lillack.net>"]
-repository = "https://github.com/roblillack/retrosaurus"
-homepage = "https://github.com/roblillack/retrosaurus"
+repository = "https://github.com/roblillack/RetroSaurus"
+homepage = "https://github.com/roblillack/RetroSaurus"
 license = "MIT"
 readme = "README.md"
 keywords = ["thesaurus", "dictionary", "wordnet", "retro", "gui"]
 categories = ["gui", "text-processing"]
 
-# RetroSaurus embeds the ~20 MB WordNet index into the binary, so it is well
-# past crates.io's size limit and is distributed as a release binary, not a
-# published crate. The whitelist documents what a source checkout needs.
+# The WordNet index is fetched and compiled by build.rs, not shipped in the
+# crate, so this whitelist is just the source a checkout needs to build.
 include = ["src/**/*.rs", "build.rs", "Cargo.toml", "README.md", "LICENSE"]
 
 [dependencies]
