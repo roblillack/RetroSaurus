@@ -6,6 +6,9 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  # build.rs writes its WordNet download here (under the cached path below)
+  # instead of the default OUT_DIR, so the fetch survives across CI runs.
+  RETROSAURUS_WORDNET_CACHE: .wordnet-cache
 
 jobs:
   ci:

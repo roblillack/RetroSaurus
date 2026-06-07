@@ -35,6 +35,7 @@ fn main() {
     println!("cargo:rerun-if-changed=build.rs");
     println!("cargo:rerun-if-changed=src/thesaurus/format.rs");
     println!("cargo:rerun-if-env-changed=RETROSAURUS_WORDNET_XML");
+    println!("cargo:rerun-if-env-changed=RETROSAURUS_WORDNET_CACHE");
 
     let out_dir = PathBuf::from(env::var("OUT_DIR").expect("OUT_DIR set by cargo"));
     let dat_path = out_dir.join("retrosaurus.dat");
@@ -69,10 +70,17 @@ fn resolve_source() -> (PathBuf, [u8; 32]) {
         return (path, sha);
     }
 
-    let cache_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap()).join(".wordnet-cache");
+    // Cache the download so repeated builds skip the fetch. Default to OUT_DIR
+    // so `cargo publish` stays happy — build scripts must not write outside
+    // OUT_DIR. CI sets RETROSAURUS_WORDNET_CACHE to a stable, cached path so it
+    // doesn't re-download on every run.
+    let cache_dir = match env::var_os("RETROSAURUS_WORDNET_CACHE") {
+        Some(dir) => PathBuf::from(dir),
+        None => PathBuf::from(env::var("OUT_DIR").expect("OUT_DIR set by cargo")),
+    };
     let cache = cache_dir.join(SOURCE_FILE);
     if !cache.exists() {
-        fs::create_dir_all(&cache_dir).expect("create .wordnet-cache");
+        fs::create_dir_all(&cache_dir).expect("create WordNet cache dir");
         download(SOURCE_URL, &cache);
     }
 
