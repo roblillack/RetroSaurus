@@ -440,12 +440,16 @@ fn about_item(dialog: &Rc<RefCell<Dialog>>) -> MenuItem {
     MenuItem::action("&About", move |cx| {
         dialog.borrow_mut().show_info(
             "About RetroSaurus",
-            "RetroSaurus\n\n\
-             A Windows 3.1-flavored thesaurus & dictionary\n\
-             built on the Saudade toolkit.\n\n\
-             Word data: Open English WordNet 2025\n\
-             \u{00A9} the OEWN community \u{2014} CC BY 4.0\n\
-             https://en-word.net",
+            format!(
+                "RetroSaurus {}\n\n\
+                 A Windows 3.1-flavored\n\
+                 thesaurus & dictionary\n\
+                 built on the Saudade toolkit.\n\n\
+                 Word data: Open English WordNet 2025\n\
+                 \u{00A9} the OEWN community \u{2014} CC BY 4.0\n\
+                 https://en-word.net",
+                env!("CARGO_PKG_VERSION"),
+            ),
         );
         cx.request_paint();
     })
