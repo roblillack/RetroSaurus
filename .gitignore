@@ -1,0 +1,3 @@
+/target
+# Cached WN-LMF download used by build.rs (re-fetched on demand).
+/.wordnet-cache

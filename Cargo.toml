@@ -1,0 +1,51 @@
+[package]
+name = "retrosaurus"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+description = "A retro Windows 3.1-styled thesaurus and dictionary for your desktop, powered by the Open English WordNet"
+authors = ["Robert Lillack <rob@lillack.net>"]
+repository = "https://github.com/roblillack/retrosaurus"
+homepage = "https://github.com/roblillack/retrosaurus"
+license = "MIT"
+readme = "README.md"
+keywords = ["thesaurus", "dictionary", "wordnet", "retro", "gui"]
+categories = ["gui", "text-processing"]
+
+# RetroSaurus embeds the ~20 MB WordNet index into the binary, so it is well
+# past crates.io's size limit and is distributed as a release binary, not a
+# published crate. The whitelist documents what a source checkout needs.
+include = ["src/**/*.rs", "build.rs", "Cargo.toml", "README.md", "LICENSE"]
+
+[dependencies]
+# saudade — the Win 3.1-styled GUI toolkit (window, widgets, painter, theme).
+saudade = "0.3"
+# Runtime half of the embedded index: `fst` answers prefix search, `postcard`
+# decodes the word/sense/synset tables. (Both are also build-dependencies so the
+# shared `src/thesaurus/format.rs` module compiles inside build.rs.)
+fst = "0.4"
+postcard = { version = "1", default-features = false, features = ["alloc"] }
+serde = { version = "1", features = ["derive"] }
+
+# The heavy WN-LMF download + XML parse happens only at build time; none of these
+# crates link into the shipped binary.
+[build-dependencies]
+fst = "0.4"
+postcard = { version = "1", default-features = false, features = ["alloc"] }
+serde = { version = "1", features = ["derive"] }
+quick-xml = "0.37"
+flate2 = "1"
+sha2 = "0.10"
+
+[dev-dependencies]
+insta = "1"
+
+# The library half (thesaurus + widgets + ui) is what the snapshot tests link
+# against; main.rs is the thin binary on top of it.
+[lib]
+name = "retrosaurus"
+path = "src/lib.rs"
+
+[[bin]]
+name = "retrosaurus"
+path = "src/main.rs"
