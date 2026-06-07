@@ -43,15 +43,15 @@ word to follow it.
 
 ### Keyboard
 
-| Key            | Action                          |
-| -------------- | ------------------------------- |
-| `Ctrl+F`       | Focus the search field          |
-| `↑` / `↓`      | Move the selection / scroll     |
-| `Alt+←`        | Back                            |
-| `Alt+→`        | Forward                         |
-| `Ctrl+R`       | Random word                     |
-| `Tab`          | Cycle search → list → definition|
-| `Ctrl+Q`       | Quit                            |
+| Key                       | Action                              |
+| ------------------------- | ----------------------------------- |
+| `Ctrl+F` / `Ctrl+L` / `Alt+W` | Focus the word field & select all |
+| `↑` / `↓`                 | Move the selection / scroll         |
+| `Alt+←`                   | Back                                |
+| `Alt+→`                   | Forward                             |
+| `Ctrl+R`                  | Random word                         |
+| `Tab`                     | Cycle search → list → definition    |
+| `Ctrl+Q`                  | Quit                                |
 
 ## Building from source
 

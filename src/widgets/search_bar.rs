@@ -43,6 +43,11 @@ impl SearchBar {
         self.input.set_text("");
     }
 
+    /// Select the whole query, so the next keystroke replaces it.
+    pub fn select_all(&mut self) {
+        self.input.select_all();
+    }
+
     fn relayout(&mut self) {
         let x = self.bounds.x + LABEL_W;
         let input_rect = Rect::new(
@@ -68,6 +73,15 @@ impl Widget for SearchBar {
             label_y,
             &self.label,
             theme.font_size,
+            theme.text,
+        );
+        // Underline the leading "W" to advertise the Alt+W mnemonic, matching
+        // saudade's menu chrome (underline one logical pixel below the glyph).
+        let mnemonic_w = painter.measure_text("W", theme.font_size).w;
+        painter.h_line(
+            self.bounds.x + PAD,
+            label_y + theme.font_size as i32 + 1,
+            mnemonic_w,
             theme.text,
         );
         // A thin etched line under the bar separates it from the panes below.

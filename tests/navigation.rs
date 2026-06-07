@@ -32,6 +32,26 @@ fn alt_left() -> Event {
     }
 }
 
+fn ctrl(c: char) -> Event {
+    Event::KeyDown {
+        key: Key::Char(c),
+        modifiers: Modifiers {
+            control: true,
+            ..Modifiers::default()
+        },
+    }
+}
+
+fn alt(c: char) -> Event {
+    Event::KeyDown {
+        key: Key::Char(c),
+        modifiers: Modifiers {
+            alt: true,
+            ..Modifiers::default()
+        },
+    }
+}
+
 #[test]
 fn typing_shows_top_match_then_link_navigates_and_back_returns() {
     let backend = common::backend(W, H);
@@ -68,4 +88,35 @@ fn typing_shows_top_match_then_link_navigates_and_back_returns() {
     backend.dispatch(&mut app, &alt_left());
     let _ = backend.render(&mut app);
     assert_eq!(app.shown_lemma().as_deref(), Some("abandon"));
+}
+
+/// Ctrl+L and Alt+W focus the word field and select its whole contents, so the
+/// next keystroke replaces the query rather than appending to it.
+#[test]
+fn focus_word_field_accelerators_select_all() {
+    for accelerator in [ctrl('l'), alt('w')] {
+        let backend = common::backend(W, H);
+        let thesaurus: Rc<dyn Thesaurus> = Rc::new(Fixture::sample());
+        let mut app = RetroSaurus::new(thesaurus);
+
+        let _ = backend.render(&mut app);
+        app.focus_first();
+        for event in type_str("abandon") {
+            backend.dispatch(&mut app, &event);
+        }
+        let _ = backend.render(&mut app);
+        assert_eq!(app.shown_lemma().as_deref(), Some("abandon"));
+
+        // The accelerator selects the whole field; typing replaces it.
+        backend.dispatch(&mut app, &accelerator);
+        for event in type_str("happy") {
+            backend.dispatch(&mut app, &event);
+        }
+        let _ = backend.render(&mut app);
+        assert_eq!(
+            app.shown_lemma().as_deref(),
+            Some("happy"),
+            "typing after the focus accelerator should replace, not append"
+        );
+    }
 }

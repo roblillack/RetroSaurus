@@ -304,9 +304,10 @@ impl RetroSaurus {
                     ctx.close();
                     return true;
                 }
-                'f' => {
-                    self.root.focus_child(SEARCH_IDX);
-                    ctx.request_paint();
+                // Focus the search field and select its text — Ctrl+F (find)
+                // and Ctrl+L (location bar, browser-style) both do this.
+                'f' | 'l' => {
+                    self.focus_search(ctx);
                     return true;
                 }
                 'r' => {
@@ -317,7 +318,7 @@ impl RetroSaurus {
             }
         }
 
-        // Alt+Left / Alt+Right browse history (left Alt only; AltGr composes).
+        // Left-Alt chords (AltGr composes, so it's excluded).
         if modifiers.mnemonic_alt() && !modifiers.control && !modifiers.logo {
             match key {
                 Key::Named(NamedKey::Left) => {
@@ -328,11 +329,24 @@ impl RetroSaurus {
                     self.commands.borrow_mut().push(AppCommand::Forward);
                     return true;
                 }
+                // Alt+W jumps to the word field and selects it.
+                Key::Char(c) if c.eq_ignore_ascii_case(&'w') => {
+                    self.focus_search(ctx);
+                    return true;
+                }
                 _ => {}
             }
         }
 
         false
+    }
+
+    /// Move keyboard focus to the search field and select all of its text, so
+    /// the next keystroke replaces the current query.
+    fn focus_search(&mut self, ctx: &mut EventCtx) {
+        self.root.focus_child(SEARCH_IDX);
+        self.search.borrow_mut().select_all();
+        ctx.request_paint();
     }
 }
 
