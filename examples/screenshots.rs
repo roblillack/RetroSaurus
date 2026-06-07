@@ -1,12 +1,12 @@
 //! Renders the README screenshot straight from the real [`RetroSaurus`] widget.
 //!
-//! It drives the deterministic [`Fixture`] through saudade's offscreen
-//! [`MockBackend`], exactly like the snapshot tests, then wraps the window in
+//! It drives the embedded Open English WordNet index through saudade's offscreen
+//! [`MockBackend`] (with the bundled DejaVu fonts, so glyph rasterization is
+//! identical regardless of the host's installed fonts), then wraps the window in
 //! Canoe-style chrome (a title bar, frame and drop shadow) with
 //! [`MockBackend::render_framed`] so the image looks the way a user sees the app
-//! on the desktop. No embedded word index (or windowing system) is needed and
-//! the output is byte-stable across machines. Run it from the crate root to
-//! refresh `docs/screenshot.png`:
+//! on the desktop. No windowing system is needed and the output is byte-stable
+//! across machines. Run it from the crate root to refresh `docs/screenshot.png`:
 //!
 //! ```sh
 //! cargo run --example screenshots
@@ -15,7 +15,7 @@
 use std::path::Path;
 use std::rc::Rc;
 
-use retrosaurus::thesaurus::{Fixture, Thesaurus};
+use retrosaurus::thesaurus::{EmbeddedThesaurus, Thesaurus};
 use retrosaurus::ui::RetroSaurus;
 use saudade::mock::MockBackend;
 use saudade::{Event, Font, Modifiers, Widget, WindowChrome};
@@ -26,7 +26,8 @@ const WINDOW_H: i32 = 470;
 const SCALE: f32 = 2.0;
 
 fn main() {
-    let thesaurus: Rc<dyn Thesaurus> = Rc::new(Fixture::sample());
+    let thesaurus: Rc<dyn Thesaurus> =
+        Rc::new(EmbeddedThesaurus::load().expect("embedded WordNet index"));
     let mut app = RetroSaurus::new(thesaurus);
 
     let backend = MockBackend::new(WINDOW_W, WINDOW_H)
@@ -34,11 +35,11 @@ fn main() {
         .with_font(sans_font())
         .with_mono_font(mono_font());
 
-    // Warm-up render, focus the search field, then type a word with a rich
-    // entry (definitions, examples, synonyms, antonyms, related words).
+    // Warm-up render, focus the search field, then type an on-theme word with a
+    // rich entry (definitions, examples, synonyms, antonyms, related words).
     let _ = backend.render(&mut app);
     app.focus_first();
-    for event in type_text("abandon") {
+    for event in type_text("extinct") {
         backend.dispatch(&mut app, &event);
     }
 
