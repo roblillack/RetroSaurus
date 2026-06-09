@@ -1,6 +1,6 @@
 [package]
 name = "retrosaurus"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 rust-version = "1.88"
 description = "A retro Windows 3.1-styled thesaurus and dictionary for your desktop, powered by the Open English WordNet"
