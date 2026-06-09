@@ -18,7 +18,7 @@ include = ["src/**/*.rs", "build.rs", "Cargo.toml", "README.md", "LICENSE"]
 
 [dependencies]
 # saudade — the Win 3.1-styled GUI toolkit (window, widgets, painter, theme).
-saudade = "0.3"
+saudade = "0.4"
 # Runtime half of the embedded index: `fst` answers prefix search, `postcard`
 # decodes the word/sense/synset tables. (Both are also build-dependencies so the
 # shared `src/thesaurus/format.rs` module compiles inside build.rs.)

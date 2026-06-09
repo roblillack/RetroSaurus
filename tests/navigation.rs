@@ -79,6 +79,7 @@ fn typing_shows_top_match_then_link_navigates_and_back_returns() {
         &Event::PointerDown {
             pos: center,
             button: MouseButton::Left,
+            modifiers: Modifiers::default(),
         },
     );
     let _ = backend.render(&mut app);

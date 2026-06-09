@@ -14,8 +14,8 @@
 //! out by the previous paint — the same approach saudade's `TextInput` uses.
 
 use saudade::{
-    Color, Event, EventCtx, Key, MouseButton, NamedKey, Painter, Point, Rect, SCROLLBAR_THICKNESS,
-    ScrollBar, Theme, Widget,
+    Color, Cursor, Event, EventCtx, Key, MouseButton, NamedKey, Painter, Point, Rect,
+    SCROLLBAR_THICKNESS, ScrollBar, Theme, Widget,
 };
 
 use crate::thesaurus::{Entry, Pos, WordId};
@@ -26,7 +26,7 @@ const INDENT_SENSE: i32 = 16;
 const INDENT_DETAIL: i32 = 30;
 
 // Link colors — a brighter blue than the navy chrome, underlined so they read
-// as clickable without a hand cursor (saudade exposes no cursor API).
+// as clickable; hovering one also swaps in the Finger pointer (see `event`).
 const LINK: Color = Color::rgb(0x00, 0x00, 0xCC);
 const LINK_HOVER: Color = Color::rgb(0x33, 0x66, 0xFF);
 
@@ -370,6 +370,7 @@ impl Widget for DefinitionView {
             Event::PointerDown {
                 pos,
                 button: MouseButton::Left,
+                ..
             } => {
                 ctx.request_focus();
                 if let Some(idx) = self.link_at(*pos) {
@@ -379,6 +380,12 @@ impl Widget for DefinitionView {
             }
             Event::PointerMove { pos } => {
                 let hovered = self.link_at(*pos);
+                // A link under the pointer reads as clickable: show the Finger
+                // pointer. The runtime falls back to the arrow on any move we
+                // don't answer, so this is only re-requested while over a link.
+                if hovered.is_some() {
+                    ctx.set_cursor(Cursor::Hand);
+                }
                 if hovered != self.hovered {
                     self.hovered = hovered;
                     ctx.request_paint();
