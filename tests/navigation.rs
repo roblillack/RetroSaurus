@@ -10,8 +10,8 @@ use retrosaurus::thesaurus::{Fixture, Thesaurus};
 use retrosaurus::ui::RetroSaurus;
 use saudade::{Event, Key, Modifiers, MouseButton, NamedKey, Point, Widget};
 
-const W: i32 = 660;
-const H: i32 = 470;
+const W: i32 = 495;
+const H: i32 = 352;
 
 fn type_str(text: &str) -> Vec<Event> {
     text.chars()

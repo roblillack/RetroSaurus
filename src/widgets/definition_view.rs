@@ -14,7 +14,7 @@
 //! out by the previous paint — the same approach saudade's `TextInput` uses.
 
 use saudade::{
-    Color, Cursor, Event, EventCtx, Key, MouseButton, NamedKey, Painter, Point, Rect,
+    Color, Cursor, Event, EventCtx, Key, Merged, MouseButton, NamedKey, Painter, Point, Rect,
     SCROLLBAR_THICKNESS, ScrollBar, Theme, Widget,
 };
 
@@ -22,8 +22,8 @@ use crate::thesaurus::{Entry, Pos, WordId};
 
 const PAD_X: i32 = 6;
 const PAD_Y: i32 = 4;
-const INDENT_SENSE: i32 = 16;
-const INDENT_DETAIL: i32 = 30;
+const INDENT_SENSE: i32 = 12;
+const INDENT_DETAIL: i32 = 22;
 
 // Link colors — a brighter blue than the navy chrome, underlined so they read
 // as clickable; hovering one also swaps in the Finger pointer (see `event`).
@@ -123,7 +123,7 @@ impl DefinitionView {
             line_count: 0,
             laid_width: -1,
             dirty: true,
-            font_size: 14.0,
+            font_size: 11.0,
             v_scrollbar: ScrollBar::vertical(Rect::new(0, 0, 0, 0)),
             focused: false,
             hovered: None,
@@ -153,7 +153,7 @@ impl DefinitionView {
     }
 
     fn line_height(&self) -> i32 {
-        (self.font_size as i32 + 8).max(10)
+        (self.font_size as i32 + 6).max(10)
     }
 
     fn text_area(&self) -> Rect {
@@ -173,6 +173,18 @@ impl DefinitionView {
             (self.rect.w - sb_w + overlap).max(0),
             self.rect.h,
         )
+    }
+
+    /// Which edges of the text field sit on a neighbouring frame line: the
+    /// right one, when the field overlaps the scrollbar (see `text_area`).
+    /// Passed to the merged chrome / frame-clip calls so the field's border
+    /// lands on the scrollbar's own border pixels at every scale.
+    fn merged(&self) -> Merged {
+        if self.v_scrollbar.rect().w > 0 {
+            Merged::RIGHT
+        } else {
+            Merged::NONE
+        }
     }
 
     fn content_w(&self) -> i32 {
@@ -212,7 +224,7 @@ impl DefinitionView {
 
     fn style_size(&self, style: RunStyle) -> f32 {
         match style {
-            RunStyle::Headword => self.font_size + 4.0,
+            RunStyle::Headword => self.font_size + 3.0,
             _ => self.font_size,
         }
     }
@@ -312,9 +324,10 @@ impl Widget for DefinitionView {
         self.sync_scrollbar();
 
         let text = self.text_area();
+        let merged = self.merged();
         painter.fill_rect(text, Color::WHITE);
-        painter.sunken_bevel(text, theme.highlight, theme.shadow);
-        painter.stroke_rect(text, theme.border);
+        painter.sunken_bevel_merged(text, merged, theme.highlight, theme.shadow);
+        painter.stroke_rect_merged(text, merged, theme.border);
 
         let line_h = self.line_height();
         let x0 = text.x + PAD_X;
@@ -322,7 +335,9 @@ impl Widget for DefinitionView {
         let visible = self.visible_rows() as usize;
         let scroll_top = self.scroll_top();
 
-        let saved = painter.push_clip(text.inset(1));
+        // Clip to the frame's interior, so text stops on exactly the border
+        // line's device pixels at fractional scales.
+        let saved = painter.push_clip_frame(text, 1, merged);
 
         if self.doc.is_empty() {
             painter.text(x0, y0, &self.placeholder, self.font_size, Color::MID_GRAY);

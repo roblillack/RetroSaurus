@@ -11,8 +11,10 @@ use retrosaurus::thesaurus::{EmbeddedThesaurus, Thesaurus};
 use retrosaurus::ui::RetroSaurus;
 use saudade::{App, Theme, WindowConfig};
 
-const WINDOW_W: i32 = 660;
-const WINDOW_H: i32 = 470;
+/// Initial window size, in logical pixels. Saudade's logical pixel targets
+/// 72 dpi, so this opens at the same physical size 660×470 did at 96 dpi.
+const WINDOW_W: i32 = 495;
+const WINDOW_H: i32 = 352;
 
 fn main() -> ExitCode {
     let thesaurus: Rc<dyn Thesaurus> = match EmbeddedThesaurus::load() {

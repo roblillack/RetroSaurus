@@ -7,13 +7,15 @@
 
 use saudade::{Color, Event, EventCtx, Painter, Rect, TextInput, Theme, Widget};
 
-const LABEL_W: i32 = 48;
 const PAD: i32 = 4;
 
 pub struct SearchBar {
     bounds: Rect,
     input: TextInput,
     label: String,
+    /// Measured width of `label`. Text can only be measured while painting,
+    /// so this holds a rough estimate until the first paint corrects it.
+    label_w: i32,
 }
 
 impl SearchBar {
@@ -22,6 +24,7 @@ impl SearchBar {
             bounds: rect,
             input: TextInput::new(Rect::new(0, 0, 0, 0)),
             label: "Word:".to_string(),
+            label_w: 32,
         };
         me.relayout();
         me
@@ -49,7 +52,7 @@ impl SearchBar {
     }
 
     fn relayout(&mut self) {
-        let x = self.bounds.x + LABEL_W;
+        let x = self.bounds.x + PAD + self.label_w + PAD;
         let input_rect = Rect::new(
             x,
             self.bounds.y + PAD,
@@ -66,6 +69,11 @@ impl Widget for SearchBar {
     }
 
     fn paint(&mut self, painter: &mut Painter, theme: &Theme) {
+        let label_w = painter.measure_text(&self.label, theme.font_size).w;
+        if label_w != self.label_w {
+            self.label_w = label_w;
+            self.relayout();
+        }
         painter.fill_rect(self.bounds, theme.face);
         let label_y = self.bounds.y + (self.bounds.h - theme.font_size as i32) / 2 - 1;
         painter.text(

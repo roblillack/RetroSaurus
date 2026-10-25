@@ -9,8 +9,8 @@ use retrosaurus::thesaurus::{Fixture, Thesaurus};
 use retrosaurus::ui::RetroSaurus;
 use saudade::{Event, Modifiers, Widget};
 
-const W: i32 = 660;
-const H: i32 = 470;
+const W: i32 = 495;
+const H: i32 = 352;
 
 fn app() -> Box<dyn Widget> {
     let thesaurus: Rc<dyn Thesaurus> = Rc::new(Fixture::sample());

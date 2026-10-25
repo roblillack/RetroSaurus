@@ -10,9 +10,11 @@ use saudade::Rect;
 /// Height of the menu bar.
 pub const MENU_H: i32 = 20;
 /// Height of the search toolbar below the menu.
-pub const TOOLBAR_H: i32 = 28;
+pub const TOOLBAR_H: i32 = 26;
 /// Width of the word-result list on the left.
-pub const LIST_W: i32 = 196;
+pub const LIST_W: i32 = 147;
+/// Narrowest the definition pane gets before the list gives up width to it.
+pub const MIN_DETAIL_W: i32 = 90;
 /// Breathing room around and between the two panes.
 pub const PAD: i32 = 6;
 
@@ -36,7 +38,7 @@ fn content_h(b: Rect) -> i32 {
 
 /// Width of the list, clamped so the definition pane keeps a usable minimum.
 fn list_w(b: Rect) -> i32 {
-    LIST_W.min((b.w - 3 * PAD - 120).max(0))
+    LIST_W.min((b.w - 3 * PAD - MIN_DETAIL_W).max(0))
 }
 
 pub fn list(b: Rect) -> Rect {

@@ -20,8 +20,9 @@ use retrosaurus::ui::RetroSaurus;
 use saudade::mock::MockBackend;
 use saudade::{Event, Font, Modifiers, Widget, WindowChrome};
 
-const WINDOW_W: i32 = 660;
-const WINDOW_H: i32 = 470;
+// Same logical size the binary opens at (see `src/main.rs`).
+const WINDOW_W: i32 = 495;
+const WINDOW_H: i32 = 352;
 // Capture at 2× so the README image stays crisp on hi-DPI displays.
 const SCALE: f32 = 2.0;
 
@@ -32,7 +33,7 @@ fn main() {
 
     let backend = MockBackend::new(WINDOW_W, WINDOW_H)
         .with_scale(SCALE)
-        .with_font(sans_font())
+        .with_sans_font(sans_font())
         .with_mono_font(mono_font());
 
     // Warm-up render, focus the search field, then type an on-theme word with a
@@ -54,12 +55,12 @@ fn main() {
 }
 
 fn sans_font() -> Font {
-    Font::from_bytes(include_bytes!("../tests/fonts/DejaVuSans.ttf").to_vec())
+    Font::from_sans_bytes(include_bytes!("../tests/fonts/DejaVuSans.ttf").to_vec())
         .expect("bundled DejaVuSans.ttf failed to load")
 }
 
 fn mono_font() -> Font {
-    Font::from_bytes(include_bytes!("../tests/fonts/DejaVuSansMono.ttf").to_vec())
+    Font::from_sans_bytes(include_bytes!("../tests/fonts/DejaVuSansMono.ttf").to_vec())
         .expect("bundled DejaVuSansMono.ttf failed to load")
 }
 
